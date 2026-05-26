@@ -9,6 +9,7 @@
         .card { border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .header-app { background: #2c3e50; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container card p-0">
@@ -22,7 +23,7 @@
             <form class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Nombre Completo</label>
-                    <input type="text" class="form-control" id="nombre" placeholder="Ej. Estrellita Quintero">
+                    <input type="text" class="form-control" id="nombre" placeholder="Ej. Estrellita Quintero" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Tipo de ID</label>
@@ -33,46 +34,129 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Número Identificación</label>
-                    <input type="text" class="form-control" id="identificacion" placeholder="Sin puntos">
+                    <input type="text" class="form-control" id="identificacion" placeholder="Sin puntos" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="correo_electronico" placeholder="nombre@correo.com">
+                    <input type="email" class="form-control" id="correo_electronico" placeholder="nombre@correo.com" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Dependencia</label>
-                    <input type="text" class="form-control" id="dependencia" placeholder="Ej. Administrativa">
+                    <input type="text" class="form-control" id="dependencia" placeholder="Ej. Administrativa" required>
                 </div>
                 <div class="col-12">
                     <label class="form-label">Dirección de Residencia</label>
-                    <input type="text" class="form-control" id="direccion" placeholder="Calle, Carrera, Ciudad">
+                    <input type="text" class="form-control" id="direccion" placeholder="Calle, Carrera, Ciudad" required>
                 </div>
                 <div class="col-12 text-end">
-                    <button type="button" class="btn btn-success px-4">Guardar Empleado</button>
+                    <button type="submit" class="btn btn-success px-4">Guardar Empleado</button>
                 </div>
             </form>
 
             <hr class="my-5">
 
             <h4 class="mb-3">Listado de Nómina (HU02)</h4>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Tipo ID</th>
-                                <th>Identificación</th>
-                                <th>Dirección</th>
-                                <th>Dependencia</th>
-                                <th>Correo Electrónico</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaCuerpo">
-                            </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Tipo ID</th>
+                            <th>Identificación</th>
+                            <th>Dirección</th>
+                            <th>Dependencia</th>
+                            <th>Correo Electrónico</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCuerpo">
+                        </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <script>
+        const API_URL = "http://localhost:8080/api/empleados";
+
+        // Función para cargar empleados (HU02) - CORREGIDA PARA EVITAR NULL/UNDEFINED
+        async function cargarEmpleados() {
+            try {
+                const respuesta = await fetch(API_URL);
+                const empleados = await respuesta.json();
+                const tabla = document.getElementById("tablaCuerpo");
+                tabla.innerHTML = "";
+                
+                empleados.forEach(emp => {
+                    // Lógica para detectar el nombre de campo que envíe el servidor (con guion o camelCase)
+                    const tipoId = emp.tipo_identificacion || emp.tipoIdentificacion || "N/A";
+                    const correo = emp.correo_electronico || emp.correoElectronico || "N/A";
+
+                    tabla.innerHTML += `
+                        <tr>
+                            <td>${emp.id}</td>
+                            <td>${emp.nombre}</td>
+                            <td>${tipoId}</td>
+                            <td>${emp.identificacion}</td>
+                            <td>${emp.direccion}</td>
+                            <td>${emp.dependencia}</td>
+                            <td>${correo}</td>
+                        </tr>`;
+                });
+            } catch (error) {
+                console.error("Error al cargar datos:", error);
+            }
+        }
+
+        // Función para guardar (HU01) - Con SweetAlert2 y reseteo de formulario
+        document.querySelector("form").addEventListener("submit", async (e) => {
+            e.preventDefault(); 
+            
+            const nuevoEmpleado = {
+                nombre: document.getElementById("nombre").value,
+                tipoIdentificacion: document.getElementById("tipo_identificacion").value,
+                identificacion: document.getElementById("identificacion").value,
+                correoElectronico: document.getElementById("correo_electronico").value,
+                dependencia: document.getElementById("dependencia").value,
+                direccion: document.getElementById("direccion").value
+            };
+
+            try {
+                const respuesta = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevoEmpleado)
+                });
+
+                if (respuesta.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Guardado!',
+                        text: 'El empleado se registró correctamente',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    document.querySelector("form").reset();
+                    cargarEmpleados(); // Actualiza la lista automáticamente
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo guardar. Verifica la conexión con la base de datos.'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sin conexión',
+                    text: 'Asegúrate de que el Backend en Java esté ejecutándose.'
+                });
+            }
+        });
+
+        // Cargar datos al iniciar la página
+        window.onload = cargarEmpleados;
+    </script>
 </body>
 </html>
