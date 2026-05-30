@@ -1,21 +1,31 @@
-# Evidencia AA3-EV01: Diseño y Desarrollo de Servicios Web - CRUD Empleados
+Evidencia AA3-EV02: Desarrollo de la Interfaz Gráfica y Componentes del Sistema - CRUD Empleados
+Aprendiz: Estrellita Quintero
+Programa: Análisis y Desarrollo de Software (ADSO) - SENA
 
-**Aprendiz:** Estrellita Quintero  
-**Programa:** ADSO - SENA
+📝 Descripción
+Este proyecto consiste en una aplicación Full-Stack para la gestión e integración de la nómina de colaboradores. El sistema implementa una arquitectura de tres capas que conecta una interfaz de usuario dinámica con un servidor backend y persistencia de datos relacional:
 
-## 📝 Descripción
+Frontend: Interfaz web responsiva construida con HTML5, Bootstrap 5 y JavaScript (Fetch API) para el consumo asíncrono de servicios. Incluye validaciones nativas en el lado del cliente y alertas interactivas con SweetAlert2.
 
-Este proyecto es una API REST desarrollada con **Spring Boot** para la gestión de empleados. Utiliza **JPA/Hibernate** para la persistencia de datos en una base de datos **MySQL**.
+Backend: API REST robusta desarrollada en Java con Spring Boot y Spring Data JPA.
 
-## 🛠️ Configuración
+Base de Datos: Motor MySQL para el almacenamiento seguro y persistencia de los registros (sena_empleados_db).
 
-1. **Base de Datos:** Importar el archivo `script_db_empleados.sql` incluido.
-2. **Ejecución:** Ejecutar la clase `EmpleadosCrudApplication.java` desde el IDE.
+🛠️ Tecnologías Utilizadas
+Java 17 / Spring Boot
 
-## 🚀 Endpoints (URL Base)
+MySQL Server
 
-- **URL Principal:** http://localhost:8080/api/empleados
+JavaScript (ES6+) / Fetch API
 
-## 🔗 Repositorio GitHub
+Bootstrap 5 / SweetAlert2
 
-[https://github.com/EstrellitaQuinteroDev/empleados-crud.git]
+🚀 Componentes e Historias de Usuario Implementadas
+HU01 - Registro de Colaboradores: Formulario interactivo para la captura y envío de datos hacia el servidor mediante peticiones POST.
+
+HU02 - Visualización de Nómina: Tabla dinámica que lista en tiempo real los empleados registrados consumiendo el Endpoint GET.
+
+HU03 - Pruebas de Validación: Restricciones de obligatoriedad en los campos clave del formulario para garantizar la calidad de la información antes de la persistencia.
+
+🔗 Repositorio GitHub
+[https://github.com/EstrellitaQuinteroDev/empleados-frontend-ev2.git]
